@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sarthak Bhosale — Interactive Portfolio</title>
+
+  <style>
+    :root{
+      --bg:#070a12;--surface:#0c1020;--text:#e9ecff;--muted:#9aa3ff;
+      --neon:#7cffcb;--violet:#7c7cff;--pink:#ff7ad9;--gold:#ffd166;
+      --glass:rgba(255,255,255,.08);--border:rgba(255,255,255,.18);
+      --radius:28px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+
+    body{
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(124,124,255,.25), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(124,255,203,.18), transparent 55%),
+        radial-gradient(700px 400px at 50% 110%, rgba(255,122,217,.18), transparent 60%),
+        var(--bg);
+      overflow-x:hidden;
+      cursor:none;
+    }
+
+    .container{max-width:1200px;margin:auto;padding:96px 24px}
+
+    /* HERO */
+    .hero{text-align:center;margin-bottom:120px}
+    .avatar-wrap{position:relative;display:inline-grid;place-items:center;margin-bottom:24px}
+    .avatar{width:120px;height:120px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 0 60px rgba(124,255,203,.45)}
+    .halo{position:absolute;inset:-18px;border-radius:50%;background:conic-gradient(var(--neon),var(--violet),var(--pink),var(--neon));filter:blur(14px);opacity:.75;animation:spin 6s linear infinite;z-index:-1}
+
+    h1{font-size:clamp(44px,6vw,68px);text-shadow:0 0 22px rgba(124,124,255,.45)}
+    .subtitle{margin-top:10px;color:var(--muted)}
+
+    nav{margin-top:32px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center}
+    nav a{color:var(--text);text-decoration:none;padding:10px 18px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.04));border:1px solid var(--border);backdrop-filter:blur(10px);transition:.3s}
+    nav a:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(124,124,255,.35)}
+
+    section{margin-bottom:100px}
+    h2{font-size:32px;margin-bottom:20px}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid var(--border);border-radius:var(--radius);backdrop-filter:blur(14px);padding:32px;transition:.5s}
+    .card:hover{transform:translateY(-12px);box-shadow:0 30px 70px rgba(0,0,0,.6)}
+
+    footer{text-align:center;opacity:.7}
+
+    /* CURSOR */
+    .cursor,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999}
+    .cursor{width:14px;height:14px;border-radius:50%;background:var(--neon);mix-blend-mode:screen}
+    .cursor-ring{width:36px;height:36px;border-radius:50%;border:2px solid rgba(124,255,203,.6);mix-blend-mode:screen}
+
+    /* RGB MODE */
+    body.rgb{animation:hue 6s linear infinite}
+    @keyframes hue{to{filter:hue-rotate(360deg)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+
+<div class="cursor"></div>
+<div class="cursor-ring"></div>
+
+<canvas id="particleCanvas" style="position:fixed;inset:0;z-index:-1"></canvas>
+
+<div class="container">
+  <header class="hero">
+    <div class="avatar-wrap">
+      <img src="myaiimage.jpeg" class="avatar" alt="AI portrait" />
+      <span class="halo"></span>
+    </div>
+    <h1>Sarthak Satish Bhosale</h1>
+    <p class="subtitle">BCA • Web Developer • Interactive UI Enthusiast</p>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#education">Education</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="CV_202502241118467.pdf" download>Download CV</a>
+    </nav>
+  </header>
+
+  <section id="about"><h2>About</h2><p>BCA graduate focused on modern web, UI motion, and immersive user experiences.</p></section>
+
+  <section id="education"><h2>Education</h2><p><strong>BCA (Computer Applications)</strong> — CGPA <strong>9.00</strong></p></section>
+
+  <section id="projects"><h2>Projects</h2><div class="grid"><div class="card">Fees Management System</div><div class="card">v-energia.co.in Website</div></div></section>
+
+  <section id="skills"><h2>Skills</h2><div class="grid"><div class="card">HTML • CSS • JS • AngularJS</div><div class="card">Java • SQL • SAP</div></div></section>
+
+  <footer>© 2026 Sarthak Bhosale</footer>
+</div>
+
+<canvas id="runner" width="320" height="120" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);border-radius:16px;background:rgba(0,0,0,.4);z-index:50"></canvas>
+
+<button id="rgbToggle" style="position:fixed;right:20px;bottom:20px;padding:10px 14px;border-radius:999px;border:none;background:linear-gradient(90deg,#ff0080,#7928ca,#00f0ff);font-weight:700;cursor:pointer">RGB</button>
+
+<script>
+/* CURSOR */
+const cursor=document.querySelector('.cursor');
+const ring=document.querySelector('.cursor-ring');
+addEventListener('mousemove',e=>{cursor.style.transform=`translate(${e.clientX}px,${e.clientY}px)`;ring.style.transform=`translate(${e.clientX-18}px,${e.clientY-18}px)`});
+
+/* RGB MODE */
+document.getElementById('rgbToggle').onclick=()=>document.body.classList.toggle('rgb');
+
+/* PARTICLES */
+const pCanvas=document.getElementById('particleCanvas');
+const pCtx=pCanvas.getContext('2d');
+function resizeP(){pCanvas.width=innerWidth;pCanvas.height=innerHeight}
+resizeP();addEventListener('resize',resizeP);
+const pts=Array.from({length:80},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6}));
+(function animP(){pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);pCtx.fillStyle='rgba(124,255,203,.6)';pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>innerWidth)p.vx*=-1;if(p.y<0||p.y>innerHeight)p.vy*=-1;pCtx.beginPath();pCtx.arc(p.x,p.y,2,0,Math.PI*2);pCtx.fill()});requestAnimationFrame(animP)})();
+
+/* RUNNER GAME */
+const game=document.getElementById('runner');
+const g=game.getContext('2d');
+let px=20,py=80,vy=0,ox=320,score=0;
+function jump(){if(py>=80)vy=-8}
+addEventListener('keydown',e=>e.code==='Space'&&jump());game.onclick=jump;
+(function loop(){g.clearRect(0,0,320,120);vy+=0.6;py+=vy;if(py>80){py=80;vy=0}ox-=4;if(ox<-20){ox=320;score++}if(Math.abs(ox-px)<14&&py>60)score=0;g.fillStyle='#0f0';g.fillRect(px,py,14,14);g.fillStyle='#f00';g.fillRect(ox,80,12,20);g.fillStyle='#0ff';g.fillText('Score:'+score,240,16);requestAnimationFrame(loop)})();
+
+/* KONAMI */
+const konami=['arrowup','arrowup','arrowdown','arrowdown','arrowleft','arrowright','arrowleft','arrowright','b','a'];let k=[];
+addEventListener('keydown',e=>{k.push(e.key.toLowerCase());k=k.slice(-10);if(k.join()==konami.join())alert('SECRET MODE UNLOCKED')});
+
+/* VOICE INTRO */
+addEventListener('click',()=>{const msg=new SpeechSynthesisUtterance('Welcome to Sarthak Bhosale\'s interactive portfolio');speechSynthesis.speak(msg)},{once:true});
+</script>
+
+</body>
+</html>
